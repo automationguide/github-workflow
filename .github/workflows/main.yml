@@ -8,6 +8,11 @@ on:
         description: "Your name:"
         required: true
         default: "Fred"
+      shoutout:
+        type: boolean
+        description: "Should I shout this?"
+        required: true
+        default: "true"
 
 jobs:
   greeting:
@@ -20,4 +25,9 @@ jobs:
         GREETING="Hello, ${{github.event.inputs.name}}"
         echo "::set-output name=greeting::${GREETING}"
 
-    - run: echo "${{steps.greeting-step.outputs.greeting}}"
+    - id: shoutout-step
+      run: |
+        if [ "${{github.event.inputs.shoutout}}" == "true" ]; then SHOUTOUT="!"; else SHOUTOUT=""; fi
+        echo "::set-output name=shoutout::${SHOUTOUT}"
+
+    - run: echo "${{steps.greeting-step.outputs.greeting}}${{steps.shoutout-step.outputs.shoutout}}"
