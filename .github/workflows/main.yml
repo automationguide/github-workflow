@@ -15,4 +15,9 @@ jobs:
 
     steps:
     - name: Hello world
-      run: echo "Hello, ${{github.event.inputs.name}}"
+      id: greeting-step
+      run: |
+        GREETING="Hello, ${{github.event.inputs.name}}"
+        echo "::set-output name=greeting::${GREETING}"
+
+    - run: echo "${steps.greeting-step.outputs.greeting}"
