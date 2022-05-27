@@ -27,19 +27,21 @@ jobs:
     outputs:
       greeting: ${{steps.greeting-step.outputs.greeting}}
       shoutout: ${{steps.shoutout-step.outputs.shoutout}}
+      config-file: ${{steps.config-step.outputs.config-file}}
 
     steps:
     - uses: actions/checkout@v3
 
-    - id: language-step
+    - id: config-step
       run: |
         PREFIX=$(jq -Mr '.${{github.event.inputs.language}}' languages.json)
         echo "::set-output name=prefix::${PREFIX}"
+        echo "::set-output name=config-file::$(jq -Mc '.' .github/config.json)"
 
     - name: Hello world
       id: greeting-step
       run: |
-        GREETING="${{steps.language-step.outputs.prefix}}, ${{github.event.inputs.name}}"
+        GREETING="${{steps.config-step.outputs.prefix}}, ${{github.event.inputs.name}}"
         echo "::set-output name=greeting::${GREETING}"
 
     - id: shoutout-step
@@ -49,7 +51,7 @@ jobs:
 
   greeting:
     needs: config
-    runs-on: ubuntu-latest
+    runs-on: ${{fromJson(needs.config.outputs.config-file).runs-on}}
 
     steps:
     - run: echo "${{needs.config.outputs.greeting}}${{needs.config.outputs.shoutout}}"
