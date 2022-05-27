@@ -13,16 +13,28 @@ on:
         description: "Should I shout this?"
         required: true
         default: "true"
+      language:
+        type: choice
+        description: "Choose a language:"
+        required: true
+        options:
+        - english
+        - french
 
 jobs:
   greeting:
     runs-on: ubuntu-latest
 
     steps:
+    - id: language-step
+      run: |
+        PREFIX=$(cat ${{github.event.inputs.language}}.txt)
+        echo "::set-output name=prefix::${PREFIX}"
+
     - name: Hello world
       id: greeting-step
       run: |
-        GREETING="Hello, ${{github.event.inputs.name}}"
+        GREETING="${{steps.language-step.outputs.prefix}}, ${{github.event.inputs.name}}"
         echo "::set-output name=greeting::${GREETING}"
 
     - id: shoutout-step
