@@ -33,7 +33,7 @@ jobs:
 
     - id: language-step
       run: |
-        PREFIX=$(cat ${{github.event.inputs.language}}.txt)
+        PREFIX=$(jq -Mr '.${{github.event.inputs.language}}' languages.json)
         echo "::set-output name=prefix::${PREFIX}"
 
     - name: Hello world
