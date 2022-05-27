@@ -22,8 +22,11 @@ on:
         - french
 
 jobs:
-  greeting:
+  config:
     runs-on: ubuntu-latest
+    outputs:
+      greeting: ${{steps.greeting-step.outputs.greeting}}
+      shoutout: ${{steps.shoutout-step.outputs.shoutout}}
 
     steps:
     - uses: actions/checkout@v3
@@ -44,4 +47,9 @@ jobs:
         if [ "${{github.event.inputs.shoutout}}" == "true" ]; then SHOUTOUT="!"; else SHOUTOUT=""; fi
         echo "::set-output name=shoutout::${SHOUTOUT}"
 
-    - run: echo "${{steps.greeting-step.outputs.greeting}}${{steps.shoutout-step.outputs.shoutout}}"
+  greeting:
+    needs: config
+    runs-on: ubuntu-latest
+
+    steps:
+    - run: echo "${{needs.config.outputs.greeting}}${{needs.config.outputs.shoutout}}"
