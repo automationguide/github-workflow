@@ -26,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v3
+
     - id: language-step
       run: |
         PREFIX=$(cat ${{github.event.inputs.language}}.txt)
